@@ -25,7 +25,7 @@ function startGameServer() {
     const serverPath = path.join(APP_ROOT, 'server', 'server.js');
     const { startServer } = require(serverPath);
     gameServer = startServer();
-    console.log('[Electron] ✅ Game server started on port 3001');
+    console.log('[Electron] ✅ Game server started on port 3002');
   } catch (err) {
     console.error('[Electron] ❌ Game server failed:', err.message);
     // Non-fatal — app still launches, QR mode just won't work

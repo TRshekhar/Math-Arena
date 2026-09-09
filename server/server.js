@@ -3,8 +3,11 @@ const http       = require('http');
 const { Server } = require('socket.io');
 const os         = require('os');
 const path       = require('path');
+const dotenv     = require('dotenv');
 
-const PORT = 3001;
+dotenv.config();
+
+const PORT = process.env.PORT || 3002;
 
 function getLocalIP() {
   for (const nets of Object.values(os.networkInterfaces()))

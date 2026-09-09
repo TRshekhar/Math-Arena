@@ -631,7 +631,7 @@
       if (!code || code.length < 4) return showError('Enter a valid session code');
       if (!S.team) return showError('Select your team first');
 
-      const url = `${location.protocol}//${location.hostname}:3001`;
+      const url = `${location.protocol}//${location.hostname}:3002`;
       S.socket = io(url, { transports: ['websocket'] });
       S.session = code;
 

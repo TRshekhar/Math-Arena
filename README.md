@@ -1,4 +1,4 @@
-# 🧮 Math Arena
+# Math Arena
 
 > A competitive multiplayer math battle game for school and college students — powered by tug-of-war mechanics.
 
@@ -10,7 +10,7 @@
 
 ---
 
-## 📖 What is Math Arena?
+## What is Math Arena?
 
 Math Arena is a **2-team competitive math game** where students race to answer math questions. Every correct answer pulls a virtual tug-of-war rope toward your side. The team that drags the rope past the opponent's boundary **wins the contest**.
 
@@ -18,38 +18,38 @@ It supports both **same-screen split play** and **multi-device play via QR code*
 
 ---
 
-## ✨ Features
+## Features
 
-### 🎬 Intro & Navigation
+### Intro & Navigation
 - **Animated loading splash** on first launch with progress bar and glowing logo
 - **Landing screen** with two clear entry points: Quick Play or Custom Contest
 - **Back / Quit buttons** on every screen — never get stuck
 - **Pause overlay** with blur effect during gameplay
 
-### 🏆 Gameplay
+### Gameplay
 - **Tug-of-War mechanic** — correct answers pull the rope; first to cross the boundary wins
 - **MCQ questions** — four options, tap to answer instantly
 - **Subjective questions** — on-screen numeric keypad with SUBMIT button
 - **25-second countdown** per question with animated ring timer
-- **⏸ Pause / ▶ Resume** button to freeze the game at any moment
-- **Live score tracking**, streaks 🔥, and round-by-round feedback
+- **Pause / Resume** button to freeze the game at any moment
+- **Live score tracking**, streaks, and round-by-round feedback
 - **Confetti victory screen** with final rope position replay
 
-### 🛠️ Admin Panel
+### Admin Panel
 - Add / edit / delete questions from a visual question bank
 - Set **question type** (MCQ or Subjective), **difficulty** (Easy / Medium / Hard), and **category**
 - Filter questions by difficulty level
 - **15 sample questions** pre-loaded across multiple categories
 
-### 🎮 Play Modes
+### Play Modes
 | Mode | Description |
 |------|-------------|
-| **⚡ Quick Play** | Jump straight in using pre-loaded questions — no setup needed |
-| **🛠️ Custom Contest** | Open Admin Panel to add your own questions, then start |
+| **Quick Play** | Jump straight in using pre-loaded questions — no setup needed |
+| **Custom Contest** | Open Admin Panel to add your own questions, then start |
 | **Same Screen** | Both teams play on one device — split-screen layout |
 | **Multi-Device (QR)** | Each team scans a QR code to join from their own device |
 
-### 🎨 Design
+### Design
 - Animated intro with star field, glow orbs, and gradient rope decoration
 - Dark gaming aesthetic: deep navy `#060f1e` background
 - Team colors: **Green** (Team 1) vs **Red** (Team 2), **Light Blue** accents
@@ -59,10 +59,10 @@ It supports both **same-screen split play** and **multi-device play via QR code*
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
-tug_of_math/
+BrainBlitz/
 ├── public/
 │   ├── index.html
 │   └── favicon.ico
@@ -96,7 +96,7 @@ tug_of_math/
 
 ---
 
-## 🖥️ Screen Flow
+## Screen Flow
 
 ```
 App Launch
@@ -110,7 +110,7 @@ App Launch
 
 ---
 
-## ⚙️ Prerequisites
+## Prerequisites
 
 | Tool | Version | Download |
 |------|---------|----------|
@@ -120,7 +120,7 @@ App Launch
 
 ---
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
 ### Step 1 — Create Vite + React Project
 
@@ -196,11 +196,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 npm run dev
 ```
 
-Open **http://localhost:5173** in your browser ✅
+Open **http://localhost:5173** in your browser
 
 ---
 
-## 🖥️ Build as Desktop App (.EXE)
+## Build as Desktop App (.EXE)
 
 ### Step 5 — Install Electron
 
@@ -281,11 +281,11 @@ Add these fields (keep your existing `dependencies`):
 npm run dist
 ```
 
-Your `.exe` installer appears in the **`dist_electron/`** folder 🎉
+Your `.exe` installer appears in the **`dist_electron/`** folder
 
 ---
 
-## 🧪 All Available Commands
+## All Available Commands
 
 | Command | What it does |
 |---------|-------------|
@@ -297,17 +297,17 @@ Your `.exe` installer appears in the **`dist_electron/`** folder 🎉
 
 ---
 
-## 🎮 How to Play
+## How to Play
 
 ### Quick Play (no setup needed)
 1. Open the app → animated splash loads → landing screen appears
-2. Click **⚡ Quick Play**
+2. Click ** Quick Play**
 3. Enter custom team names (or keep defaults)
 4. Choose **Same Screen** or **Multi-Device**
 5. Set number of questions → Click **Start Battle!**
 
 ### Custom Contest
-1. Click **🛠️ Custom Contest** on the landing screen
+1. Click ** Custom Contest** on the landing screen
 2. Add math questions — set type, difficulty, category, and correct answer
 3. Click **START CONTEST** when ready
 4. Follow Setup screen to begin
@@ -331,7 +331,7 @@ Your `.exe` installer appears in the **`dist_electron/`** folder 🎉
 
 ---
 
-## 📚 Question Categories
+## Question Categories
 
 | Category | Example Topics |
 |----------|---------------|
@@ -347,7 +347,7 @@ Your `.exe` installer appears in the **`dist_electron/`** folder 🎉
 
 ---
 
-## 🤝 Multiplayer Modes Explained
+## Multiplayer Modes Explained
 
 ### Same Screen Mode
 Both teams sit at the same computer. The screen is split into a **left panel (Team 1)** and **right panel (Team 2)**. Each team uses their own side's buttons or keypad to answer simultaneously.
@@ -359,11 +359,11 @@ Both teams sit at the same computer. The screen is split into a **left panel (Te
 4. Players answer from their own device
 5. Answers sync back to the main game screen in real time
 
-> ℹ️ The current version simulates the QR connection flow. Full LAN networking with `socket.io` can be added for production deployment.
+> The current version simulates the QR connection flow. Full LAN networking with `socket.io` can be added for production deployment.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Technology | Purpose |
 |-----------|---------|
@@ -378,7 +378,7 @@ Both teams sit at the same computer. The screen is split into a **left panel (Te
 
 ---
 
-## 📐 Component Reference
+## Component Reference
 
 | Component | File | Responsibility |
 |-----------|------|---------------|
@@ -398,7 +398,7 @@ Both teams sit at the same computer. The screen is split into a **left panel (Te
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 **Buttons are cut off or not visible**
 → Zoom out in browser with `Ctrl` + `-`. The layout targets 1280×800 or larger screens.
@@ -423,7 +423,7 @@ Both teams sit at the same computer. The screen is split into a **left panel (Te
 
 ---
 
-## 🗺️ Roadmap / Future Ideas
+## Roadmap / Future Ideas
 
 - [ ] Real LAN multiplayer with `socket.io`
 - [ ] Sound effects and background music
@@ -436,14 +436,14 @@ Both teams sit at the same computer. The screen is split into a **left panel (Te
 
 ---
 
-## 📄 License
+## License
 
 MIT License — free for educational and personal use.
 
 ---
 
-## 🙌 Credits
+## Credits
 
 Built with React + Vite + Electron. Designed for students and educators who want to make math competitions exciting and interactive.
 
-> *"Answer fast. Pull hard. Win the rope."* 🏆
+> *"Answer fast. Pull hard. Win the rope."*

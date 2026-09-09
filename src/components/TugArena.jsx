@@ -1,113 +1,168 @@
 import { T1_COLOR, T2_COLOR, WIN_L, WIN_R } from '../constants/gameData';
 
-function Fig({ x, y, color, flip, pulling }) {
-  const anim = pulling
-    ? `${flip ? 'maPullR' : 'maPullL'} 0.4s ease-in-out infinite`
-    : 'none';
+const ANIM_CSS = `
+/* Baseline Taut Lean-Back Idle (Continuous Strain) */
+@keyframes idleTension { 
+  0%, 100% { transform: rotate(-16deg) translateY(0px); } 
+  50%      { transform: rotate(-19deg) translateY(1px); } 
+}
+
+/* Deep Pull Action (Digging feet in) */
+@keyframes plBody { 
+  0%   { transform: rotate(-16deg); } 
+  40%  { transform: rotate(-34deg) translateX(-8px); } 
+  100% { transform: rotate(-16deg); } 
+}
+
+/* Stumble Action (Pulled forward against tension) */
+@keyframes stBody { 
+  0%   { transform: rotate(-16deg); } 
+  40%  { transform: rotate(18deg) translateX(10px); } 
+  100% { transform: rotate(-16deg); } 
+}
+`;
+
+let cssReady = false;
+function ensureCSS() {
+  if (cssReady || typeof document === 'undefined') return;
+  cssReady = true;
+  const s = document.createElement('style');
+  s.textContent = ANIM_CSS;
+  document.head.appendChild(s);
+}
+
+function StickFigure({ x, y, color, flip, mode = 'idle', delay = 0 }) {
+  ensureCSS();
+
+  const sw  = 3.8;
+  const shY = -24;
+  
+  const isAction = mode === 'pull' || mode === 'stumble';
+  const dur  = isAction ? '0.55s' : '1.8s';
+  const iter = isAction ? '1 ease-out' : 'infinite ease-in-out';
+  const d    = `${delay}s`;
+
+  const TM  = `0px 0px`; // Pivot around feet for realistic ground leverage
+
+  const p = mode === 'pull';
+  const s = mode === 'stumble';
+
+  const bodyS = p ? { animation:`plBody ${dur} ${iter} ${d}`, transformOrigin:TM }
+              : s ? { animation:`stBody ${dur} ${iter} ${d}`, transformOrigin:TM }
+              : { animation:`idleTension ${dur} ${iter} ${d}`, transformOrigin:TM };
+
   return (
-    <g style={{ transformOrigin: `${x}px ${y}px`, animation: anim }}>
-      <g transform={`translate(${x},${y}) scale(${flip ? -1 : 1},1)`}>
-        <circle cx="0" cy="-30" r="8.5" fill={color} />
-        <line x1="0"  y1="-22" x2="-5" y2="4"   stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
-        <line x1="-2" y1="-12" x2="14" y2="-7"  stroke={color} strokeWidth="2.2" strokeLinecap="round"/>
-        <line x1="-2" y1="-12" x2="-13" y2="-4" stroke={color} strokeWidth="2.2" strokeLinecap="round"/>
-        <line x1="-5" y1="4"   x2="9"  y2="27"  stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
-        <line x1="-5" y1="4"   x2="-12" y2="27" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
+    <g transform={`translate(${x},${y})`}>
+      <g transform={`scale(${flip ? -1 : 1},1)`}>
+        <g style={bodyS}>
+          {/* Head & Torso */}
+          <circle cx={-4} cy={-38} r={11} fill={color}/>
+          <line x1={0} y1={shY} x2={0} y2={0} stroke={color} strokeWidth={sw} strokeLinecap="round"/>
+          
+          {/* Arms stretched forward reaching for the rope line */}
+          <line x1={0} y1={shY} x2={18} y2={shY-6} stroke={color} strokeWidth={sw-0.8} strokeLinecap="round"/>
+          <line x1={0} y1={shY+4} x2={14} y2={shY-4} stroke={color} strokeWidth={sw-0.8} strokeLinecap="round"/>
+          
+          {/* Planted Leg Stance (Wide base for leverage) */}
+          <line x1={0} y1={0} x2={-16} y2={30} stroke={color} strokeWidth={sw} strokeLinecap="round"/>
+          <line x1={0} y1={0} x2={12}  y2={30} stroke={color} strokeWidth={sw} strokeLinecap="round"/>
+        </g>
       </g>
     </g>
   );
 }
 
 export default function TugArena({ ropePos, lastW }) {
-  const W = 900, H = 170, GY = 132, RY = 88;
-  const X1 = 150, X2 = 750;
-  const kx   = X1 + (ropePos / 100) * (X2 - X1);
-  const lbX  = X1 + (WIN_L  / 100) * (X2 - X1);
-  const rbX  = X1 + (WIN_R  / 100) * (X2 - X1);
+  const W = 900, H = 180, GY = 140, RY = 66; // Raised rope line to align with hands
+  const ropeX1 = 158, ropeX2 = 742;
+  
+  const shiftX = (ropePos - 50) * 3.2;
+  const currentRopeX1 = ropeX1 + shiftX;
+  const currentRopeX2 = ropeX2 + shiftX;
+
+  const kx   = ropeX1 + (ropePos / 100) * (ropeX2 - ropeX1);
+  const lbX  = ropeX1 + (WIN_L  / 100) * (ropeX2 - ropeX1);
+  const rbX  = ropeX1 + (WIN_R  / 100) * (ropeX2 - ropeX1);
+  const figY = GY - 30;
+
+  const t1X = [currentRopeX1 - 2, currentRopeX1 - 38, currentRopeX1 - 74];
+  const t2X = [currentRopeX2 + 2, currentRopeX2 + 38, currentRopeX2 + 74];
+
+  const t1Mode = lastW === 1 ? 'pull' : lastW === 2 ? 'stumble' : 'idle';
+  const t2Mode = lastW === 2 ? 'pull' : lastW === 1 ? 'stumble' : 'idle';
+
+  // Rope flattens straight during pull (high tension) and sags slightly when idle
+  const leftSag  = lastW === 1 ? RY + 1 : RY + 6;
+  const rightSag = lastW === 2 ? RY + 1 : RY + 6;
+
+  const springStyle = { transition: 'transform 0.65s cubic-bezier(0.34,1.56,0.64,1)' };
 
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%" style={{ display: 'block' }}>
+    <div style={{ position:'relative', width:'100%' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%" style={{ display:'block' }}>
         <defs>
-          <linearGradient id="gndG" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stopColor="#0d2a10"/>
-            <stop offset="100%" stopColor="#061508"/>
+          <linearGradient id="ta_gnd" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#0e2e12"/>
+            <stop offset="100%" stopColor="#071609"/>
           </linearGradient>
-          <linearGradient id="ropeG" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stopColor="#e0c07a"/>
-            <stop offset="60%"  stopColor="#c8a96e"/>
-            <stop offset="100%" stopColor="#8b6914"/>
+          <linearGradient id="ta_rope" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#e8cc82"/>
+            <stop offset="55%"  stopColor="#c9aa6e"/>
+            <stop offset="100%" stopColor="#8c6a14"/>
           </linearGradient>
-          <radialGradient id="knotG" cx="35%" cy="35%">
-            <stop offset="0%"   stopColor="#ffe566"/>
-            <stop offset="100%" stopColor="#c8960c"/>
+          <radialGradient id="ta_knot" cx="35%" cy="35%">
+            <stop offset="0%"   stopColor="#ffe96a"/>
+            <stop offset="100%" stopColor="#ca9a0d"/>
           </radialGradient>
-          <filter id="fglow">
+          <filter id="ta_glow" x="-30%" y="-30%" width="160%" height="160%">
             <feGaussianBlur stdDeviation="3" result="b"/>
             <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
         </defs>
 
-        {/* BG */}
+        {/* Sky */}
         <rect width={W} height={H} fill="#060f1e"/>
-        {[30,100,175,265,350,440,530,620,700,785,860].map((cx,i) =>
-          <circle key={i} cx={cx} cy={8+(i%4)*7} r="1.3" fill="rgba(255,255,255,.3)" />
-        )}
 
         {/* Ground */}
-        <rect x="0" y={GY} width={W} height={H - GY} fill="url(#gndG)"/>
-        <line x1="0" y1={GY} x2={W} y2={GY} stroke="#1e6020" strokeWidth="2"/>
-        {[0,1,2,3,4,5,6,7,8,9].map(i =>
-          <line key={i} x1={i*100} y1={GY} x2={i*100-20} y2={H} stroke="rgba(0,70,0,.25)" strokeWidth="1"/>
-        )}
+        <rect x="0" y={GY} width={W} height={H-GY} fill="url(#ta_gnd)"/>
+        <line x1="0" y1={GY} x2={W} y2={GY} stroke="#22712a" strokeWidth="2.5"/>
 
-        {/* WIN lines */}
-        <g filter="url(#fglow)">
-          <line x1={lbX} y1={GY-62} x2={lbX} y2={GY+3}
-            stroke={T1_COLOR} strokeWidth="2.5"
-            opacity={ropePos <= 28 ? 1 : .55}
-            strokeDasharray={ropePos <= 28 ? 'none' : '6,3'}/>
-          <polygon points={`${lbX-7},${GY-62} ${lbX+7},${GY-62} ${lbX},${GY-72}`} fill={T1_COLOR} opacity={ropePos<=28?1:.55}/>
-          <text x={lbX} y={GY-76} textAnchor="middle" fill={T1_COLOR} fontSize="8.5" fontFamily="Exo 2" fontWeight="bold">WIN</text>
+        {/* WIN Markers */}
+        <g filter="url(#ta_glow)">
+          <line x1={lbX} y1={GY-70} x2={lbX} y2={GY+2} stroke={T1_COLOR} strokeWidth="2.5" opacity={ropePos<=28?1:.5}/>
+          <polygon points={`${lbX-7},${GY-70} ${lbX+7},${GY-70} ${lbX},${GY-81}`} fill={T1_COLOR} opacity={ropePos<=28?1:.5}/>
+          <text x={lbX} y={GY-85} textAnchor="middle" fill={T1_COLOR} fontSize="9" fontFamily="Exo 2" fontWeight="bold">WIN</text>
         </g>
-        <g filter="url(#fglow)">
-          <line x1={rbX} y1={GY-62} x2={rbX} y2={GY+3}
-            stroke={T2_COLOR} strokeWidth="2.5"
-            opacity={ropePos >= 72 ? 1 : .55}
-            strokeDasharray={ropePos >= 72 ? 'none' : '6,3'}/>
-          <polygon points={`${rbX-7},${GY-62} ${rbX+7},${GY-62} ${rbX},${GY-72}`} fill={T2_COLOR} opacity={ropePos>=72?1:.55}/>
-          <text x={rbX} y={GY-76} textAnchor="middle" fill={T2_COLOR} fontSize="8.5" fontFamily="Exo 2" fontWeight="bold">WIN</text>
+        <g filter="url(#ta_glow)">
+          <line x1={rbX} y1={GY-70} x2={rbX} y2={GY+2} stroke={T2_COLOR} strokeWidth="2.5" opacity={ropePos>=72?1:.5}/>
+          <polygon points={`${rbX-7},${GY-70} ${rbX+7},${GY-70} ${rbX},${GY-81}`} fill={T2_COLOR} opacity={ropePos>=72?1:.5}/>
+          <text x={rbX} y={GY-85} textAnchor="middle" fill={T2_COLOR} fontSize="9" fontFamily="Exo 2" fontWeight="bold">WIN</text>
         </g>
 
-        {/* Center */}
-        <line x1={W/2} y1={GY-55} x2={W/2} y2={GY} stroke="rgba(255,255,255,.18)" strokeWidth="1.5" strokeDasharray="5,3"/>
-        <text x={W/2} y={GY-58} textAnchor="middle" fill="rgba(255,255,255,.2)" fontSize="8" fontFamily="Exo 2">CENTER</text>
+        {/* Rope Paths (Taut Alignment) */}
+        <path d={`M ${currentRopeX1-38} ${RY} Q ${(currentRopeX1+kx)/2} ${leftSag} ${kx} ${RY}`}
+          stroke="url(#ta_rope)" strokeWidth="8" fill="none" strokeLinecap="round" style={springStyle}/>
+        <path d={`M ${kx} ${RY} Q ${(kx+currentRopeX2+38)/2} ${rightSag} ${currentRopeX2+38} ${RY}`}
+          stroke="url(#ta_rope)" strokeWidth="8" fill="none" strokeLinecap="round" style={springStyle}/>
 
-        {/* Rope */}
-        <path d={`M ${X1-30} ${RY} Q ${(X1+kx)/2} ${RY+12} ${kx} ${RY}`}
-          stroke="url(#ropeG)" strokeWidth="8.5" fill="none" strokeLinecap="round"/>
-        <path d={`M ${kx} ${RY} Q ${(kx+X2+30)/2} ${RY+12} ${X2+30} ${RY}`}
-          stroke="url(#ropeG)" strokeWidth="8.5" fill="none" strokeLinecap="round"/>
-        {[...Array(22)].map((_,i) => {
-          const rx = (X1-30) + (i+.5)/22*(X2+60-(X1-30));
-          return <line key={i} x1={rx} y1={RY-3} x2={rx+5} y2={RY+3} stroke="rgba(0,0,0,.28)" strokeWidth="1.5"/>;
-        })}
-
-        {/* Knot (CSS-transitioned) */}
-        <g style={{ transform:`translateX(${kx}px)`, transition:'transform 0.65s cubic-bezier(0.34,1.56,0.64,1)' }}>
-          <line x1="0" y1={RY-28} x2="0" y2={RY-10} stroke="#bbb" strokeWidth="3" strokeLinecap="round"/>
-          <polygon points="-1,-28 18,-21 -1,-14" transform={`translate(0,${RY})`} fill="#ff4081"/>
-          <circle cx="0" cy={RY} r="11" fill="url(#knotG)" stroke="#b8860b" strokeWidth="2.5"/>
-          <circle cx="-3" cy={RY-3} r="3" fill="rgba(255,255,255,.35)"/>
+        {/* Center Knot Flag */}
+        <g style={{ transform:`translateX(${kx}px)`, ...springStyle }}>
+          <line x1="0" y1={RY-28} x2="0" y2={RY-8} stroke="#c8c8c8" strokeWidth="3" strokeLinecap="round"/>
+          <polygon points={`0,${RY-28} 18,${RY-20} 0,${RY-12}`} fill="#ff4081"/>
+          <circle cx="0" cy={RY} r="11" fill="url(#ta_knot)" stroke="#b8860b" strokeWidth="2.5"/>
         </g>
 
-        {/* Team 1 figures */}
-        {[0,1,2].map(i => <Fig key={i} x={60-i*32} y={RY} color={T1_COLOR} flip={false} pulling={lastW===1}/>)}
-        {[0,1,2].map(i => <ellipse key={i} cx={60-i*32} cy={GY+2} rx={10} ry={3} fill="rgba(0,0,0,.3)"/>)}
+        {/* Team 1 Group */}
+        <g style={{ transform: `translateX(${shiftX}px)`, ...springStyle }}>
+          {t1X.map((fx,i) => <StickFigure key={`t1-${i}`} x={fx - shiftX} y={figY} color={T1_COLOR} flip={false} mode={t1Mode} delay={i*0.1}/>)}
+          {t1X.map((fx,i) => <ellipse key={`t1s-${i}`} cx={fx - shiftX} cy={GY+1} rx={11} ry={3} fill="rgba(0,0,0,.28)"/>)}
+        </g>
 
-        {/* Team 2 figures */}
-        {[0,1,2].map(i => <Fig key={i} x={W-60+i*32} y={RY} color={T2_COLOR} flip={true} pulling={lastW===2}/>)}
-        {[0,1,2].map(i => <ellipse key={i} cx={W-60+i*32} cy={GY+2} rx={10} ry={3} fill="rgba(0,0,0,.3)"/>)}
+        {/* Team 2 Group */}
+        <g style={{ transform: `translateX(${shiftX}px)`, ...springStyle }}>
+          {t2X.map((fx,i) => <StickFigure key={`t2-${i}`} x={fx - shiftX} y={figY} color={T2_COLOR} flip={true} mode={t2Mode} delay={i*0.1}/>)}
+          {t2X.map((fx,i) => <ellipse key={`t2s-${i}`} cx={fx - shiftX} cy={GY+1} rx={11} ry={3} fill="rgba(0,0,0,.28)"/>)}
+        </g>
       </svg>
     </div>
   );

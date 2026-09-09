@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { useCSS } from '../hooks/useCSS';
 import { T1_COLOR, T2_COLOR, AC_COLOR, BG_MID, BG_CARD } from '../constants/gameData';
 
+// const game_title = "Math Arena - Multiplayer Math Battle";
+const game_title = "BRAIN BLITZ";
+
 /* ── Animated stars background ── */
 function Stars() {
   const stars = Array.from({ length: 60 }, (_, i) => ({
@@ -88,11 +91,11 @@ export default function IntroScreen({ onQuickPlay, onCustomContest }) {
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             animation: 'maGradient 3s linear infinite',
           }}>
-            MATH ARENA
+            {game_title}
           </div>
 
           {/* Loading bar */}
-          <div style={{ marginTop: 36, width: 220, height: 3, background: 'rgba(255,255,255,.08)', borderRadius: 2, overflow: 'hidden' }}>
+          <div style={{ margin: '0 auto', width: 220, height: 3, background: 'rgba(255,255,255,.08)', borderRadius: 2, overflow: 'hidden' }}>
             <div style={{
               height: '100%', borderRadius: 2,
               background: `linear-gradient(90deg,${T1_COLOR},${AC_COLOR})`,
@@ -142,7 +145,7 @@ export default function IntroScreen({ onQuickPlay, onCustomContest }) {
           animation: 'maGradient 4s linear infinite',
           lineHeight: 1,
         }}>
-          MATH ARENA
+          {game_title}
         </div>
         <div style={{ marginTop: 8, fontSize: 13, color: '#7a9cc6', letterSpacing: 4, fontWeight: 600 }}>
           MULTIPLAYER MATH BATTLE

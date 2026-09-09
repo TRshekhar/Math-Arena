@@ -76,4 +76,4 @@ export const DEFAULT_Q = [
 { id:'q29', type:'sub', q:'45 men can complete work in 16 days. After 6 days, 30 more men join. How many days to finish remaining work?', ans:'9', diff:'medium', cat:'Time and Work', timer:30 },
 
 { id:'q30', type:'sub', q:'X can complete work in 20 days and Y in 12 days. X works alone for 4 days then Y joins. Total time taken?', ans:'10', diff:'medium', cat:'Time and Work', timer:30 }
-];;
+];
