@@ -20,7 +20,6 @@ export default function App() {
   const [questions,  setQuestions]  = useState(DEFAULT_Q);
   const [gameConfig, setGameConfig] = useState(null);
   const [result,     setResult]     = useState(null);
-  // Unique key incremented each new game so GameScreen fully resets
   const [gameKey,    setGameKey]    = useState(0);
 
   const getGameQ = (count) => shuffle(questions).slice(0, count);
